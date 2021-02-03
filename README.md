@@ -36,7 +36,7 @@ This is a customisation of [JJ/github-pr-contains-action](https://github.com/JJ/
 * `v0`: Proof of concept, published to marketplace
 * `v1`: Adds several more checks
 * `v2`: Adds check for strings to avoid and creates issues for errors.
-<forked>
+--forked--
 * `v3`: Adds diffDoesNotContain field
 * `v4`: Improves counting behaviour, updates to current dependencies
 
