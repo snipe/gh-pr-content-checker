@@ -1,6 +1,6 @@
-name: 'Check PR for word'
-description: 'Checks PR body and diff for specific words'
-author: 'JJ'
+name: 'GitHub PR Content Checker'
+description: 'Checks PR body and diff for word occurrences'
+author: 'jsoares'
 branding:
   icon: 'git-pull-request'
   color: 'gray-dark'
@@ -8,9 +8,9 @@ inputs:
   github-token:
     description: 'Github token, added magically'
   bodyContains:
-    description: 'String that must be in the PR description'
+    description: 'String that must be in the PR body'
   bodyDoesNotContain:
-    description: 'String that must not be in the PR description'
+    description: 'String that must not be in the PR body'
   diffContains:
     description: 'String that must be in the PR diff'
   diffDoesNotContain:

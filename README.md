@@ -1,13 +1,13 @@
-# Checking PRs for words
+# GitHub PR Content Checker
 
-This action checks for the presence of a word in the body or diff in a PR.
+This action checks for the presence or absence of a word in the body or diff in a PR, as well as the number of lines and files changed. If fails if one or more of the set criteria isn't met.
 
 # Using this action
 
 You need to add this in a file in `.github/workflows` and set appropriate options.
 
 ```
-name: "Check PR for word"
+name: "Check PR content"
 on: [pull_request]
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check PR
-      uses: jsoares/github-pr-contains-action@master
+      uses: jsoares/gh-pr-content-checker@master
       with:
         github-token: ${{github.token}}
         bodyContains: 'Add this'
@@ -26,18 +26,19 @@ jobs:
         maxFilesChanged: 1
 ```
 
-An example is provided in .github/workflows/ in this repository.
+An example is also provided in .github/workflows/ in this repository.
 
-## Contributing to development
-
-This is a customisation of [JJ/github-pr-contains-action](https://github.com/JJ/github-pr-contains-action/). I suggest you contribute to the upstream repository.
 
 ## History
 
-* `v0`: proof of concept, published to marketplace
+This is a customisation of [JJ/github-pr-contains-action](https://github.com/JJ/github-pr-contains-action/), using updated dependencies, improving counting behaviour, and adding a diffDoesNotContain flag.
+
+* `v0`: Proof of concept, published to marketplace
 * `v1`: Adds several more checks
 * `v2`: Adds check for strings to avoid and creates issues for errors.
+<forked>
 * `v3`: Adds diffDoesNotContain field
+* `v4`: Improves counting behaviour, updates to current dependencies
 
 ## License
 
