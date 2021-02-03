@@ -1,10 +1,10 @@
-# Checking PRs for words and other things
+# Checking PRs for words
 
-Based on the [actions template](https://github.com/actions/javascript-template), we'll try to create a new action. This new action will check for the presence of a word in the body or diff in a PR. It uses the GitHub API, so you'll need to provide a token. Don't worry, that's built-in.
+This action checks for the presence of a word in the body or diff in a PR.
 
 # Using this action
 
-You would need to add this in a file in `.github/workflows`
+You need to add this in a file in `.github/workflows` and set appropriate options.
 
 ```
 name: "Check PR for word"
@@ -15,33 +15,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check PR
-      uses: JJ/github-pr-contains-action@releases/v0
+      uses: jsoares/github-pr-contains-action@master
       with:
         github-token: ${{github.token}}
-        bodyDoesNotContain: "Delete this"
-        bodyContains: 'Test'
-        diffContains: 'Test'
-        filesChanged: 1
+        bodyContains: 'Add this'
+        bodyDoesNotContain: "Delete this"        
+        diffContains: 'Add this'
+        diffDoesNotContain: "Delete this"        
         linesChanged: 1
+        filesChanged: 1
 ```
 
-The `bodyContain` variable will include the string that we want the body of the PR to include, such as checked items in a checklist.
-
-They can be left empty if no check wants to be done.
-
-An example is used as [.github/workflows/pr.yaml](.github/workflows/pr-v1.yaml) in this repository.
+An example is provided in .github/workflows/ in this repository.
 
 ## Contributing to development
 
-Any suggestion, but report, etc, is appreciated. Please use [issues](https://github.com/JJ/github-pr-contains-action/issues) for doing that.
+This is a customisation of [JJ/github-pr-contains-action](https://github.com/JJ/github-pr-contains-action/). I suggest you contribute to the upstream repository.
 
 ## History
 
 * `v0`: proof of concept, published to marketplace
 * `v1`: Adds several more checks
 * `v2`: Adds check for strings to avoid and creates issues for errors.
+* `v3`: Adds diffDoesNotContain field
 
 ## License
 
-This is a modification of the original template, and is released under
-the MIT license.
+This is a modification of [JJ/github-pr-contains-action](https://github.com/JJ/github-pr-contains-action/) and is released under the MIT license.

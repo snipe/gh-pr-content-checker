@@ -8,11 +8,13 @@ inputs:
   github-token:
     description: 'Github token, added magically'
   bodyContains:
-    description: 'Word that must be contained in the PR body, can be left blank'
+    description: 'String that must be in the PR description'
   bodyDoesNotContain:
-    description: 'String that should not be in the PR body, can be left blank'
+    description: 'String that must not be in the PR description'
   diffContains:
-    description: 'Word that must be contained in the added code'
+    description: 'String that must be in the PR diff'
+  diffDoesNotContain:
+    description: 'String that must not be in the PR diff'
   linesChanged:
     description: 'Max number of lines changed per PR'
   filesChanged:
@@ -20,7 +22,7 @@ inputs:
 outputs:
   diff:
     description: "Lines added to the PR"
-    
+
 runs:
   using: 'node12'
-  main: 'lib/main.js'
+  main: 'dist/index.js'
