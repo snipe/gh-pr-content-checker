@@ -2107,44 +2107,6 @@ exports.paginateRest = paginateRest;
 
 /***/ }),
 
-/***/ 883:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-const VERSION = "1.0.3";
-
-/**
- * @param octokit Octokit instance
- * @param options Options passed to Octokit constructor
- */
-
-function requestLog(octokit) {
-  octokit.hook.wrap("request", (request, options) => {
-    octokit.log.debug("request", options);
-    const start = Date.now();
-    const requestOptions = octokit.request.endpoint.parse(options);
-    const path = requestOptions.url.replace(options.baseUrl, "");
-    return request(options).then(response => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`);
-      return response;
-    }).catch(error => {
-      octokit.log.info(`${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`);
-      throw error;
-    });
-  });
-}
-requestLog.VERSION = VERSION;
-
-exports.requestLog = requestLog;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
 /***/ 44:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -3513,31 +3475,6 @@ const request = withDefaults(endpoint.endpoint, {
 });
 
 exports.request = request;
-//# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 375:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-var core = __nccwpck_require__(762);
-var pluginRequestLog = __nccwpck_require__(883);
-var pluginPaginateRest = __nccwpck_require__(193);
-var pluginRestEndpointMethods = __nccwpck_require__(44);
-
-const VERSION = "18.1.0";
-
-const Octokit = core.Octokit.plugin(pluginRequestLog.requestLog, pluginRestEndpointMethods.restEndpointMethods, pluginPaginateRest.paginateRest).defaults({
-  userAgent: `octokit-rest.js/${VERSION}`
-});
-
-exports.Octokit = Octokit;
 //# sourceMappingURL=index.js.map
 
 
@@ -6082,16 +6019,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const core = __nccwpck_require__(186);
-const { GitHub, context } = __nccwpck_require__(438);
-const { Octokit } = __nccwpck_require__(375);
+const github = __nccwpck_require__(438);
 const parse = __nccwpck_require__(833);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // get information on everything
             const token = core.getInput('github-token', { required: true });
-            const github = new Octokit({ auth: token });
-            const PR_number = context.payload.pull_request.number;
+            const octokit = github.getOctokit(token);
+            const context = github.context;
             // Check that the pull request description contains the required string
             const bodyContains = core.getInput('bodyContains');
             if (bodyContains && !context.payload.pull_request.body.includes(bodyContains)) {
@@ -6103,13 +6039,19 @@ function run() {
                 core.setFailed("The PR description should not include " + bodyDoesNotContain);
             }
             // Request the pull request diff from the GitHub API
-            const diff_url = context.payload.pull_request.diff_url;
-            const result = yield github.request(diff_url);
-            const files = parse(result.data);
-            // Check that the specified number of files have changed
-            const filesChanged = core.getInput('filesChanged');
-            if (filesChanged && files.length != filesChanged) {
-                core.setFailed("You should change exactly " + filesChanged + " file(s)");
+            const { data: prDiff } = yield octokit.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                mediaType: {
+                    format: "diff",
+                },
+            });
+            const files = parse(prDiff);
+            // Check that no more than the specified number of files were changed
+            const maxFilesChanged = core.getInput('maxFilesChanged');
+            if (maxFilesChanged && files.length > maxFilesChanged) {
+                core.setFailed("The PR shouldn not change more than " + maxFilesChanged + " file(s)");
             }
             // Get changed chunks
             var changes = '';
@@ -6124,21 +6066,20 @@ function run() {
                     });
                 });
             });
-            // Check that the specified number of lines have changed
-            const linesChanged = +core.getInput('linesChanged');
-            if (linesChanged && (additions != linesChanged)) {
-                const this_msg = "You should change exactly " + linesChanged + " lines(s) and you have changed " + additions;
-                core.setFailed(this_msg);
+            // Check that no more than the specified number of lines have changed
+            const maxLinesChanged = +core.getInput('maxLinesChanged');
+            if (maxLinesChanged && (additions > maxLinesChanged)) {
+                core.setFailed("The PR shouldn not change more than " + maxLinesChanged + " lines(s) ");
             }
             // Check that the pull request diff constains the required string
             const diffContains = core.getInput('diffContains');
             if (diffContains && !changes.includes(diffContains)) {
-                core.setFailed("The pull request diff should include " + diffContains);
+                core.setFailed("The PR diff should include " + diffContains);
             }
             // Check that the pull request diff does not contain the forbidden string
             const diffDoesNotContain = core.getInput('diffDoesNotContain');
             if (diffDoesNotContain && changes.includes(diffDoesNotContain)) {
-                core.setFailed("The pull request diff should not include " + diffDoesNotContain);
+                core.setFailed("The PR diff should not include " + diffDoesNotContain);
             }
         }
         catch (error) {

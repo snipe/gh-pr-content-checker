@@ -1,14 +1,13 @@
 const core = require('@actions/core');
-const { GitHub, context } = require('@actions/github')
-const { Octokit } = require("@octokit/rest");
+const github = require('@actions/github')
 const parse = require('parse-diff')
 
 async function run() {
   try {
     // get information on everything
     const token = core.getInput('github-token', { required: true })
-    const github = new Octokit({auth: token })
-    const PR_number = context.payload.pull_request.number
+    const octokit = github.getOctokit(token)
+    const context = github.context
 
     // Check that the pull request description contains the required string
     const bodyContains = core.getInput('bodyContains')
@@ -23,9 +22,15 @@ async function run() {
     }
 
     // Request the pull request diff from the GitHub API
-    const diff_url = context.payload.pull_request.diff_url
-    const result = await github.request(diff_url)
-    const files = parse(result.data)
+    const { data: prDiff } = await octokit.pulls.get({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      pull_number: context.payload.pull_request.number,
+      mediaType: {
+        format: "diff",
+      },
+    });
+    const files = parse(prDiff)
 
     // Check that no more than the specified number of files were changed
     const maxFilesChanged = core.getInput('maxFilesChanged')
