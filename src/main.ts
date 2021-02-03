@@ -27,10 +27,10 @@ async function run() {
     const result = await github.request(diff_url)
     const files = parse(result.data)
 
-    // Check that the specified number of files have changed
-    const filesChanged = core.getInput('filesChanged')
-  	if ( filesChanged && files.length != filesChanged ) {
-              core.setFailed( "You should change exactly " + filesChanged + " file(s)");
+    // Check that no more than the specified number of files were changed
+    const maxFilesChanged = core.getInput('maxFilesChanged')
+  	if ( maxFilesChanged && files.length > maxFilesChanged ) {
+      core.setFailed( "The PR shouldn not change more than " + maxFilesChanged + " file(s)");
   	}
 
     // Get changed chunks
@@ -47,23 +47,22 @@ async function run() {
       })
     })
 
-    // Check that the specified number of lines have changed
-    const linesChanged = +core.getInput('linesChanged')
-    if (linesChanged && (additions != linesChanged)) {
-      const this_msg = "You should change exactly " + linesChanged + " lines(s) and you have changed " + additions
-      core.setFailed(this_msg);
+    // Check that no more than the specified number of lines have changed
+    const maxLinesChanged = +core.getInput('maxLinesChanged')
+    if (maxLinesChanged && (additions > maxLinesChanged)) {
+      core.setFailed("The PR shouldn not change more than " + maxLinesChanged + " lines(s) ");
     }
 
     // Check that the pull request diff constains the required string
     const diffContains = core.getInput('diffContains')
     if (diffContains && !changes.includes(diffContains)) {
-      core.setFailed("The pull request diff should include " + diffContains);
+      core.setFailed("The PR diff should include " + diffContains);
     }
 
     // Check that the pull request diff does not contain the forbidden string
     const diffDoesNotContain = core.getInput('diffDoesNotContain')
     if (diffDoesNotContain && changes.includes(diffDoesNotContain)) {
-      core.setFailed("The pull request diff should not include " + diffDoesNotContain);
+      core.setFailed("The PR diff should not include " + diffDoesNotContain);
     }
 
   } catch (error) {

@@ -1,5 +1,5 @@
 name: 'Check PR for word'
-description: 'Checks that the body or the added code contains a word'
+description: 'Checks PR body and diff for specific words'
 author: 'JJ'
 branding:
   icon: 'git-pull-request'
@@ -15,9 +15,9 @@ inputs:
     description: 'String that must be in the PR diff'
   diffDoesNotContain:
     description: 'String that must not be in the PR diff'
-  linesChanged:
+  maxLinesChanged:
     description: 'Max number of lines changed per PR'
-  filesChanged:
+  maxFilesChanged:
     description: 'Max number of files changed per PR'
 outputs:
   diff:

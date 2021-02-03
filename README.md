@@ -22,8 +22,8 @@ jobs:
         bodyDoesNotContain: "Delete this"        
         diffContains: 'Add this'
         diffDoesNotContain: "Delete this"        
-        linesChanged: 1
-        filesChanged: 1
+        maxLinesChanged: 1
+        maxFilesChanged: 1
 ```
 
 An example is provided in .github/workflows/ in this repository.
