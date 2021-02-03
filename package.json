@@ -1,16 +1,16 @@
 {
    "name": "github-pr-contains-action",
-   "version": "0.0.2",
+   "version": "0.0.3",
    "private": false,
    "description": "An action that performs checks on PRs",
-   "main": "lib/main.js",
+   "main": "dist/index.js",
    "scripts": {
       "build": "tsc",
-      "test": "jest"
+      "package": "ncc build src/main.ts --license licenses.txt"
    },
    "repository": {
       "type": "git",
-      "url": "git+https://github.com/actions/github-pr-contains-action.git"
+      "url": "git+https://github.com/jsoares/github-pr-contains-action.git"
    },
    "keywords": [
       "actions",
@@ -22,15 +22,13 @@
    "license": "MIT",
    "dependencies": {
       "@actions/core": "^1.2.6",
-      "@actions/github": "^1.1.0",
-      "parse-diff": "^0.6.0"
+      "@actions/github": "^4.0.0",
+      "@octokit/rest": "^18.1.0",
+      "@vercel/ncc": "^0.27.0",
+      "parse-diff": "^0.7.1"
    },
    "devDependencies": {
-      "@types/jest": "^24.0.13",
-      "@types/node": "^12.0.4",
-      "jest": "^24.8.0",
-      "jest-circus": "^24.7.1",
-      "ts-jest": "^24.0.2",
-      "typescript": "^3.5.1"
+      "@types/node": "^14.14.22",
+      "typescript": "^4.1.3"
    }
 }
