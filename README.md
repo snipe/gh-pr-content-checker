@@ -1,6 +1,6 @@
 # GitHub PR Content Checker
 
-This action checks for the presence or absence of a word in the body or diff in a PR, as well as the number of lines and files changed. If fails if one or more of the set criteria isn't met.
+This action checks for the presence or absence of a word in the body or diff in a PR, as well as the number of lines and files changed. It fails if one or more of the set criteria isn't met.
 
 # Using this action
 
